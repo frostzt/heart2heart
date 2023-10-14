@@ -34,6 +34,9 @@ devDependencies:
   '@nestjs/testing':
     specifier: ^10.0.2
     version: 10.0.2(@nestjs/common@10.0.2)(@nestjs/core@10.0.2)(@nestjs/platform-express@10.0.2)
+  '@nx-golang/gin':
+    specifier: ^0.7.0
+    version: 0.7.0(tslib@2.6.2)
   '@nx/eslint-plugin':
     specifier: 16.10.0
     version: 16.10.0(@types/node@18.7.1)(@typescript-eslint/parser@5.60.1)(eslint-config-prettier@8.1.0)(eslint@8.46.0)(nx@16.10.0)(typescript@5.1.6)
@@ -2113,6 +2116,21 @@ packages:
     transitivePeerDependencies:
       - encoding
 
+  /@nx-go/nx-go@2.7.0:
+    resolution: {integrity: sha512-TtesqhhHKG8uIagqHpxNlNN0MLlT0klGY8rWl83CZ1UIaEmL/2GWZMW8aHh1e0uRxBqe1hM6XNECJFADmknGTQ==}
+    dependencies:
+      fs-extra: 9.1.0
+    dev: true
+
+  /@nx-golang/gin@0.7.0(tslib@2.6.2):
+    resolution: {integrity: sha512-eSkJRdnWaAhrg5ZV7vgi/lph5havsW6YCOhNu4PkGadsvqqGC1hudfVWNB2E667twjFKKP/uhH+fjePkGU/MGg==}
+    peerDependencies:
+      tslib: 2.4.1
+    dependencies:
+      '@nx-go/nx-go': 2.7.0
+      tslib: 2.6.2
+    dev: true
+
   /@nx/devkit@16.10.0(nx@16.10.0):
     resolution: {integrity: sha512-IvKQqRJFDDiaj33SPfGd3ckNHhHi6ceEoqCbAP4UuMXOPPVOX6H0KVk+9tknkPb48B7jWIw6/AgOeWkBxPRO5w==}
     peerDependencies:
@@ -3301,6 +3319,11 @@ packages:
 
   /asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  /at-least-node@1.0.0:
+    resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
+    engines: {node: '>= 4.0.0'}
+    dev: true
 
   /autoprefixer@10.4.16(postcss@8.4.31):
     resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
@@ -4852,6 +4875,16 @@ packages:
     resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
     engines: {node: '>=14.14'}
     dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: true
+
+  /fs-extra@9.1.0:
+    resolution: {integrity: sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      at-least-node: 1.0.0
       graceful-fs: 4.2.11
       jsonfile: 6.1.0
       universalify: 2.0.0
