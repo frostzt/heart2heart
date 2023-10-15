@@ -15,47 +15,51 @@ paths:
   /v1/liveness:
     get:
       consumes:
-        - application/json
+      - application/json
       produces:
-        - application/json
+      - application/json
       responses:
-        '204':
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ResponseOk'
       summary: Liveness endpoint
       tags:
-        - Misc
+      - Misc
   /v1/readiness:
     get:
       consumes:
-        - application/json
+      - application/json
       produces:
-        - application/json
+      - application/json
       responses:
-        '204':
-          description: No Content
-        '500':
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ResponseOk'
+        "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ResponseError'
       summary: Readiness endpoint
       tags:
-        - Misc
+      - Misc
   /v1/version:
     get:
       consumes:
-        - application/json
+      - application/json
       produces:
-        - application/json
+      - application/json
       responses:
-        '200':
+        "200":
           description: OK
           schema:
             $ref: '#/definitions/ResponseOk'
-        '500':
+        "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ResponseError'
-      summary: Get version of app3367834 application
+      summary: Get version of keeper application
       tags:
-        - Misc
-swagger: '2.0'
+      - Misc
+swagger: "2.0"

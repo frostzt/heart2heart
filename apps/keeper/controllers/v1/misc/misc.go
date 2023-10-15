@@ -1,9 +1,8 @@
 package misc_v1
 
 import (
-	"net/http"
-
 	"apps/keeper/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,11 +39,11 @@ func (u MiscController) GetVersion(c *gin.Context) {
 // @Tags     Misc
 // @Accept   json
 // @Produce  json
-// @Success  204
+// @Success  200  {object}  utils.ResponseOk
 // @Failure  500  {object}  utils.ResponseError
 // @Router   /v1/readiness [get]
 func (u MiscController) GetReadiness(c *gin.Context) {
-	c.Status(http.StatusNoContent)
+  c.JSON(200, utils.ResponseOk{Message: "Keeper API ready..."})
 }
 
 // GetLiveness
@@ -52,8 +51,8 @@ func (u MiscController) GetReadiness(c *gin.Context) {
 // @Tags     Misc
 // @Accept   json
 // @Produce  json
-// @Success  204
+// @Success  200  {object}  utils.ResponseOk
 // @Router   /v1/liveness [get]
 func (u MiscController) GetLiveness(c *gin.Context) {
-	c.Status(http.StatusNoContent)
+  c.JSON(200, utils.ResponseOk{Message: "Keeper API live..."})
 }

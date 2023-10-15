@@ -5,6 +5,9 @@ dist
 tmp
 /out-tsc
 
+# Service specific
+/apps/keeper/vendor
+
 # dependencies
 node_modules
 
