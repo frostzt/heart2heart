@@ -2,6 +2,7 @@ package utils
 
 import (
 	"apps/keeper/docs"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -12,8 +13,13 @@ type RequestHandler struct {
 	Gin *gin.Engine
 }
 
-type ResponseError struct {
+type ErrorMessage struct {
 	Message string `json:"message"`
+} //@name ErrorMessage
+
+type ResponseError struct {
+	IsError bool           `json:"isError"`
+	Errors  []ErrorMessage `json:"errors"`
 } //@name ResponseError
 
 type ResponseOk struct {

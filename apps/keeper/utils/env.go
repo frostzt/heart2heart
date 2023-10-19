@@ -8,11 +8,11 @@ import (
 type Env struct {
 	ServerPort  string `mapstructure:"SERVER_PORT"`
 	Environment string `mapstructure:"ENV"`
+	DB_NAME     string `mapstructure:"DB_NAME"`
 }
 
 // NewEnv creates a new environment
 func NewEnv(log Logger) Env {
-
 	env := Env{}
 	viper.SetConfigFile(".env")
 	viper.SetConfigType("env")
