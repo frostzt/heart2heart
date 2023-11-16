@@ -18,6 +18,7 @@ func (s UsersRoutes) Setup() {
 	api := s.handler.Gin.Group("/apis/v1/users")
 	{
 		api.POST("/register", s.usersController.CreateUser)
+		api.POST("/login", s.usersController.LoginUser)
 	}
 }
 

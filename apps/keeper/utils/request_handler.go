@@ -26,6 +26,14 @@ type ResponseOk struct {
 	Message string `json:"message"`
 } //@name ResponseOk
 
+func GenerateErrorResponse(err error) []ErrorMessage {
+	errorMessage := ErrorMessage{Message: err.Error()}
+	errorsEncountered := []ErrorMessage{}
+	errorsEncountered = append(errorsEncountered, errorMessage)
+
+	return errorsEncountered
+}
+
 // NewRequestHandler creates a new request handler
 func NewRequestHandler(logger Logger, env Env) RequestHandler {
 	gin.DefaultWriter = logger.GetGinLogger()

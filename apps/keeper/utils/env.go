@@ -6,9 +6,19 @@ import (
 
 // Env has environment stored
 type Env struct {
-	ServerPort  string `mapstructure:"SERVER_PORT"`
 	Environment string `mapstructure:"ENV"`
-	DB_NAME     string `mapstructure:"DB_NAME"`
+	ServerPort  string `mapstructure:"SERVER_PORT"`
+
+	// Database envs
+	DB_HOST string `mapstructure:"DB_HOST"`
+	DB_PORT string `mapstructure:"DB_PORT"`
+	DB_NAME string `mapstructure:"DB_NAME"`
+	DB_USER string `mapstructure:"DB_USER"`
+	DB_PASS string `mapstructure:"DB_PASS"`
+
+	// Authentication
+	JWT_SECRET        string `mapstructure:"JWT_SECRET"`
+	JWT_COOKIE_DOMAIN string `mapstructure:"JWT_COOKIE_DOMAIN"`
 }
 
 // NewEnv creates a new environment

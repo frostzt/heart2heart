@@ -1,0 +1,28 @@
+{
+  "name": "hippo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/hippo",
+  "targets": {
+    "build": {
+      "executor": "@nx-golang/gin:build",
+      "options": {
+        "outputPath": "dist/apps/hippo",
+        "main": "apps/hippo/main.go"
+      }
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "main": "apps/hippo/main.go"
+      }
+    },
+    "test": {
+      "executor": "@nx-go/nx-go:test"
+    },
+    "lint": {
+      "executor": "@nx-golang/gin:lint"
+    }
+  },
+  "tags": []
+}

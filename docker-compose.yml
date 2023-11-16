@@ -1,0 +1,32 @@
+# This docker compose only spins up infra needed for the apps inside
+# You will still have to run the apps on your terminal
+version: '2'
+services:
+
+  # Belongs to keeper service
+  keeper-postgres:
+    container_name: keeper_database
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+        - keeper-postgres-volume:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Belongs to hippo service
+  hippo-cassandra:
+    container_name: hippo_database
+    image: cassandra:5.0
+    ports:
+      - "9042:9042"
+    restart: unless-stopped
+    volumes:
+      - hippo-cassandra-volume:/var/lib/cassandra
+
+volumes:
+  keeper-postgres-volume: {}
+  hippo-cassandra-volume: {}
