@@ -20,6 +20,8 @@ var JWT_SECRET = []byte(os.Getenv("JWT_SECRET"))
 // This will be encoded in the JWT exchanged
 type Claims struct {
 	Username string `json:"username"`
+	Email    string `json:"email"`
+	UserID   int    `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
@@ -40,6 +42,72 @@ func NewUsersController(storage *storage.UserStorage, refreshTokenStorage *stora
 		Storage:             storage,
 		RefreshTokenStorage: refreshTokenStorage,
 	}
+}
+
+// RenewAccessToken
+// @Summary Renew access token
+// @Tags    Users
+// @Accept  json
+// @Produce json
+// @Success 200 {object} utils.ResponseOk
+// @Failure 400 {object} utils.ResponseError
+// @Router  /v1/users/renew-token
+func (u UsersController) RenewAccessToken(c *gin.Context) {
+	refreshToken, err := c.Request.Cookie("Refresh-Token")
+	if err != nil {
+		errorsEncountered := utils.GenerateValidationErrors(errors.New("no refresh token was present in cookies"))
+		c.JSON(400, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	// Find the existing refresh token
+	rto, err := u.RefreshTokenStorage.FindExistingRefreshToken(refreshToken.Value)
+	if err != nil {
+		errorsEncountered := utils.GenerateValidationErrors(errors.New("refresh token is invalid"))
+		c.JSON(404, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	currentRefreshTokenExpiresIn := rto.Expires
+	currentTime := time.Now()
+
+	// If this refresh token is already expired then log the user out
+	if currentTime.After(*currentRefreshTokenExpiresIn) {
+		tempExpirationTime := time.Now()
+		errorsEncountered := utils.GenerateValidationErrors(errors.New("refresh token is no longer valid, please login again"))
+		c.SetCookie("Access-Token", "", int(tempExpirationTime.UnixMilli()), "/", os.Getenv("JWT_COOKIE_DOMAIN"), false, true)
+		c.JSON(401, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	user, err := u.Storage.FindUserWithUID(rto.UserID)
+	if err != nil {
+		errorsEncountered := utils.GenerateErrorResponse(err)
+		c.JSON(500, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	// Generate a new access token for the user
+	expirationTime := time.Now().Add(15 * time.Minute)
+	claims := &Claims{
+		Username: user.Username,
+		Email:    user.Email,
+		UserID:   user.UserID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessTokenString, err := accessToken.SignedString(JWT_SECRET)
+	if err != nil {
+		errorsEncountered := utils.GenerateErrorResponse(err)
+		c.JSON(500, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	c.SetCookie("Access-Token", accessTokenString, int(expirationTime.UnixMilli()), "/", os.Getenv("JWT_COOKIE_DOMAIN"), false, true)
+	c.JSON(200, utils.ResponseOk{Message: "Logged in successfully!"})
 }
 
 // LoginUser
@@ -97,6 +165,8 @@ func (u UsersController) LoginUser(c *gin.Context) {
 	expirationTime := time.Now().Add(15 * time.Minute)
 	claims := &Claims{
 		Username: user.Username,
+		Email:    existingUser.Email,
+		UserID:   existingUser.UserID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -122,6 +192,35 @@ func (u UsersController) LoginUser(c *gin.Context) {
 	c.SetCookie("Refresh-Token", refreshTokenObject.Token, int(refreshTokenObject.Expires.UnixMilli()), "/", os.Getenv("JWT_COOKIE_DOMAIN"), false, true)
 
 	c.JSON(200, utils.ResponseOk{Message: "Logged in successfully!"})
+}
+
+// Logout
+// @Summary  Logs the user out
+// @Tags     Users
+// @Accept   json
+// @Produce  json
+// @Success  200  {object}  utils.ResponseOk
+// @Failure  500  {object}  utils.ResponseError
+// @Router   /v1/users/logout [get]
+func (u UsersController) LogoutUser(c *gin.Context) {
+	// Generate a new access token for the user
+	expirationTime := time.Now()
+	claims := &Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessTokenString, err := accessToken.SignedString(JWT_SECRET)
+	if err != nil {
+		errorsEncountered := utils.GenerateErrorResponse(err)
+		c.JSON(500, utils.ResponseError{Errors: errorsEncountered, IsError: true})
+		return
+	}
+
+	c.SetCookie("Access-Token", accessTokenString, int(expirationTime.UnixMilli()), "/", os.Getenv("JWT_COOKIE_DOMAIN"), false, true)
+	c.JSON(200, utils.ResponseOk{Message: "Logged out successfully!"})
 }
 
 // CreateUser

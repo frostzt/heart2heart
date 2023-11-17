@@ -19,6 +19,8 @@ func (s UsersRoutes) Setup() {
 	{
 		api.POST("/register", s.usersController.CreateUser)
 		api.POST("/login", s.usersController.LoginUser)
+		api.GET("/renew-token", s.usersController.RenewAccessToken)
+		api.GET("/logout", s.usersController.LogoutUser)
 	}
 }
 
