@@ -17,3 +17,17 @@ func GenerateValidationErrors(validationErrors error) []ErrorMessage {
 
 	return errorsEncountered
 }
+
+func GenerateGenericErrors(validationErrors error) []ErrorMessage {
+	errorsEncountered := []ErrorMessage{}
+
+	for _, e := range validationErrors.(validator.ValidationErrors) {
+		errorMessage := ErrorMessage{
+			Message: e.Error(),
+		}
+
+		errorsEncountered = append(errorsEncountered, errorMessage)
+	}
+
+	return errorsEncountered
+}

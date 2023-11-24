@@ -38,6 +38,5 @@ func NewEnv(log Logger) Env {
 		log.Fatal("☠️ environment can't be loaded: ", err)
 	}
 
-	log.Infof("%+v \n", env)
 	return env
 }

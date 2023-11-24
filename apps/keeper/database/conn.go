@@ -43,7 +43,7 @@ func CreatePostgresConnection() (*pgxpool.Pool, error) {
 		return nil, err
 	}
 
-	fmt.Println("Connected to Postgres...", pool, connString)
+	fmt.Println("🛅 Connected to Postgres...")
 
 	return pool, nil
 }
