@@ -17,16 +17,18 @@ services:
       - "5432:5432"
     restart: unless-stopped
 
-  # Belongs to hippo service
-  hippo-cassandra:
-    container_name: hippo_database
-    image: cassandra:5.0
-    ports:
-      - "9042:9042"
-    restart: unless-stopped
-    volumes:
-      - hippo-cassandra-volume:/var/lib/cassandra
+  # Belongs to seer service
+
+  # # Belongs to hippo service
+  # hippo-cassandra:
+  #   container_name: hippo_database
+  #   image: cassandra:5.0
+  #   ports:
+  #     - "9042:9042"
+  #   restart: unless-stopped
+  #   volumes:
+  #     - hippo-cassandra-volume:/var/lib/cassandra
 
 volumes:
   keeper-postgres-volume: {}
-  hippo-cassandra-volume: {}
+  # hippo-cassandra-volume: {}

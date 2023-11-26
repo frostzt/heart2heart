@@ -1,0 +1,52 @@
+# App Alpha internals envs
+application:
+  containerName: 'keeper-svc'
+  containerPort: 3000
+  env: 'development'
+
+  # Application Metadata
+  meta:
+    name: 'keeper-service'
+    namespace: 'keeper-namespace'
+    appName: 'keeper'
+    tier: 'backend'
+
+  # Application Configurations
+  config:
+    replicas: 1
+    restartPolicy: 'Always'
+    imagePullPolicy: 'Never'
+    image: 'keeper-service:local'
+
+  # Resource configuration
+  resources:
+    requests:
+      memory: '512Mi'
+      cpu: '256m'
+    limits:
+      memory: '512Mi'
+      cpu: '256m'
+
+  # Application Secrets
+  secrets:
+    name: 'keeper-secrets'
+
+  # Application Database Secrets
+  database:
+    host: 'localhost'
+    port: 5432
+    db_name: 'keeper'
+    user: 'postgres'
+    pass: 'postgres'
+
+  # Authentication
+  authentication:
+    jwtSecret: 'my-super-protected-and-complex-jwt-secret'
+    jwtCookieDomain: 'localhost'
+
+# Postgres Deployment
+database:
+  namespace: 'keeper-namespace'
+  cluster:
+    name: keeper-pg-cluster
+    instances: 1

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.application.meta.name }}
+  namespace: {{ .Values.application.meta.namespace }}
+spec:
+  selector:
+    app: {{ .Values.application.meta.appName }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: {{ .Values.application.containerPort }}
+  type: ClusterIP
+---
+# Deployment for Keeper Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.application.meta.name }}
+  namespace: {{ .Values.application.meta.namespace }}
+  labels:
+    app: {{ .Values.application.meta.appName }}
+spec:
+  replicas: {{ .Values.application.config.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.application.meta.appName }}
+      tier: {{ .Values.application.meta.tier }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.application.meta.appName }}
+        tier: {{ .Values.application.meta.tier }}
+    spec:
+      containers:
+      - name: {{ .Values.application.containerName }}
+        image: {{ .Values.application.config.image }}    # Use local image name or image from DockerHub
+        imagePullPolicy: {{ .Values.application.config.imagePullPolicy }}    # This can enforce usage of local images by setting it to "Never"
+        envFrom:
+        - secretRef:
+            name: {{ .Values.application.secrets.name }}
+        ports:
+        - containerPort: {{ .Values.application.containerPort }}
+        resources:
+          requests:
+            memory: {{ .Values.application.resources.requests.memory }}
+            cpu: {{ .Values.application.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.application.resources.limits.memory }}
+            cpu: {{ .Values.application.resources.limits.cpu }}
+      restartPolicy: {{ .Values.application.config.restartPolicy }}
