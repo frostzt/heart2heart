@@ -21,8 +21,8 @@ type DBParams struct {
 func CreatePostgresConnection() (*pgxpool.Pool, error) {
 	dbHost := os.Getenv("DB_HOST")
 	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASS")
+	dbUser := os.Getenv("DB_USERNAME")
+	dbPass := os.Getenv("DB_PASSWORD")
 	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
 
 	if err != nil {

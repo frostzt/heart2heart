@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: {{ .Values.application.meta.name }}
   namespace: {{ .Values.application.meta.namespace }}
+  labels:
+    app: {{ .Values.application.meta.appName }}
 spec:
   selector:
     app: {{ .Values.application.meta.appName }}
@@ -39,6 +41,17 @@ spec:
         envFrom:
         - secretRef:
             name: {{ .Values.application.secrets.name }}
+        env:
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.database.cluster.name }}-superuser"
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.database.cluster.name }}-superuser"
+              key: password
         ports:
         - containerPort: {{ .Values.application.containerPort }}
         resources:

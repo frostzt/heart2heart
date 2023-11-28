@@ -3,6 +3,8 @@ kind: Cluster
 metadata:
   name: {{ .Values.database.cluster.name }}
   namespace: {{ .Values.application.meta.namespace }}
+  labels:
+    app: {{ .Values.application.meta.appName }}
 spec:
   instances: {{ .Values.database.cluster.instances }}
   bootstrap:

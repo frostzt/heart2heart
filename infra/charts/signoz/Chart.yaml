@@ -1,0 +1,7 @@
+apiVersion: v2
+name: signoz
+description: A Helm chart for k8s for Signoz
+
+type: application
+version: 0.1.0
+appVersion: "1.16.0"

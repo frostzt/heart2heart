@@ -1,4 +1,4 @@
-# App Alpha internals envs
+# App Keepers internals envs
 application:
   containerName: 'keeper-svc'
   containerPort: 3000
@@ -33,20 +33,26 @@ application:
 
   # Application Database Secrets
   database:
-    host: 'localhost'
+    host: 'keeper-pg-cluster-rw'
     port: 5432
     db_name: 'keeper'
     user: 'postgres'
     pass: 'postgres'
 
-  # Authentication
+  # Authentication Secrets
   authentication:
     jwtSecret: 'my-super-protected-and-complex-jwt-secret'
     jwtCookieDomain: 'localhost'
+
+  # OpenTelemetry and Signoz Secrets
+  opentelemetry:
+    serviceName: 'keeper-dev'
+    insecureMode: true
+    otelExporterOtlpEndpoint: 'signoz-apm-otel-collector.platform.svc.cluster.local:4317'
 
 # Postgres Deployment
 database:
   namespace: 'keeper-namespace'
   cluster:
-    name: keeper-pg-cluster
+    name: 'keeper-pg-cluster'
     instances: 1
