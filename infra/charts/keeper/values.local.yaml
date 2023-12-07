@@ -1,7 +1,7 @@
 # App Keepers internals envs
 application:
   containerName: 'keeper-svc'
-  containerPort: 3000
+  containerPort: 1323
   env: 'development'
 
   # Application Metadata

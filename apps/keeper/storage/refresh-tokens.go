@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +10,12 @@ import (
 
 type RefreshTokenStorage struct {
 	Pool *pgxpool.Pool
+}
+
+func NewRefreshTokenStore(pool *pgxpool.Pool) *RefreshTokenStorage {
+	return &RefreshTokenStorage{
+		Pool: pool,
+	}
 }
 
 // Used to construct a refresh token object
@@ -29,9 +34,9 @@ func (s *RefreshTokenStorage) GenerateAndInsertRefreshToken(data *SensitiveUserD
 	refreshToken := uuid.New()
 	expirationTime := time.Now().Add(168 * time.Hour) // 7 Days
 
-	query := fmt.Sprintf(`INSERT INTO "refresh_tokens" ("user_id", "refresh_token", "expires") VALUES (%d, '%s', '%s');`, data.UserID, refreshToken.String(), expirationTime.UTC().Format("2006/01/02 15:04:05"))
+	query := `INSERT INTO "refresh_tokens" ("user_id", "refresh_token", "expires") VALUES ($1, $2, $3);`
 
-	_, err := s.Pool.Query(context.Background(), query)
+	_, err := s.Pool.Query(context.Background(), query, data.UserID, refreshToken.String(), expirationTime.UTC().Format("2006/01/02 15:04:05"))
 	if err != nil {
 		return nil, err
 	}
@@ -45,9 +50,9 @@ func (s *RefreshTokenStorage) GenerateAndInsertRefreshToken(data *SensitiveUserD
 
 // Finds if a given refresh token exists
 func (s *RefreshTokenStorage) FindExistingRefreshToken(rt string) (*RefreshTokenObject, error) {
-	query := fmt.Sprintf(`SELECT "refresh_tokens"."user_id", "refresh_tokens"."refresh_token", "refresh_tokens"."expires" FROM "refresh_tokens" WHERE "refresh_tokens"."refresh_token" = '%s';`, rt)
+	query := `SELECT "refresh_tokens"."user_id", "refresh_tokens"."refresh_token", "refresh_tokens"."expires" FROM "refresh_tokens" WHERE "refresh_tokens"."refresh_token" = $1;`
 
-	rows, err := s.Pool.Query(context.Background(), query)
+	rows, err := s.Pool.Query(context.Background(), query, rt)
 	if err != nil {
 		return nil, err
 	}

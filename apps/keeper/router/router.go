@@ -1,41 +1,21 @@
-package bootstrap
+package router
 
 import (
 	"context"
-	"log"
 	"os"
 	"strings"
 
-	"apps/keeper/controllers"
-	"apps/keeper/database"
-	"apps/keeper/middlewares"
-	"apps/keeper/routes"
-	"apps/keeper/services"
-	"apps/keeper/storage"
-	"apps/keeper/utils"
-
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
+	otelMiddleware "go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.uber.org/fx"
-	"google.golang.org/grpc/credentials"
-
-	middleware "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-)
-
-// Module exported for initializing application
-var Module = fx.Options(
-	controllers.Module,
-	routes.Module,
-	utils.Module,
-	services.Module,
-	middlewares.Module,
-	database.Module,
-	storage.Module,
-	fx.Invoke(bootstrap),
+	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -44,6 +24,28 @@ var (
 	insecure     = os.Getenv("INSECURE_MODE")
 )
 
+func New() *echo.Echo {
+	initTracer()
+	// defer cleanup(context.Background())
+
+	e := echo.New()
+	e.Logger.SetLevel(log.DEBUG)
+
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(otelMiddleware.Middleware(serviceName))
+	e.Use(middleware.Logger())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
+	}))
+
+	e.Validator = NewValidator()
+
+	return e
+}
+
+// Initialize Opentelemetry Tracer
 func initTracer() func(context.Context) error {
 	var secureOption otlptracegrpc.Option
 
@@ -64,7 +66,6 @@ func initTracer() func(context.Context) error {
 	if err != nil {
 		log.Fatalf("Failed to create exporter: %v", err)
 	}
-
 	resources, err := resource.New(
 		context.Background(),
 		resource.WithAttributes(
@@ -72,7 +73,6 @@ func initTracer() func(context.Context) error {
 			attribute.String("library.language", "go"),
 		),
 	)
-
 	if err != nil {
 		log.Fatalf("Could not set resources: %v", err)
 	}
@@ -85,41 +85,6 @@ func initTracer() func(context.Context) error {
 		),
 	)
 
+	log.Debug("✅ Tracer initialized successfully...")
 	return exporter.Shutdown
-}
-
-func bootstrap(
-	lifecycle fx.Lifecycle,
-	handler utils.RequestHandler,
-	routes routes.Routes,
-	env utils.Env,
-	logger utils.Logger,
-	middlewares middlewares.Middlewares,
-) {
-	lifecycle.Append(fx.Hook{
-		OnStart: func(context.Context) error {
-			go func() {
-				initTracer()
-
-				handler.Gin.Use(middleware.Middleware(serviceName))
-
-				middlewares.Setup()
-				routes.Setup()
-				database.CreatePostgresConnection()
-
-				host := "0.0.0.0"
-				if env.Environment == "development" {
-					host = "127.0.0.1"
-				}
-
-				handler.Gin.Run(host + ":" + env.ServerPort)
-			}()
-
-			return nil
-		},
-		OnStop: func(context.Context) error {
-			logger.Info("Stopping Application")
-			return nil
-		},
-	})
 }

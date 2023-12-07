@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -10,21 +10,28 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type DBParams struct {
-	Host     string
-	Port     int
-	Database string
-	User     string
-	Password string
-}
-
 func CreatePostgresConnection() (*pgxpool.Pool, error) {
 	dbHost := os.Getenv("DB_HOST")
-	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USERNAME")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	// if utils.GetStringAbsoluteLength(dbHost) == 0 {
+	// 	return nil, errors.New("'DB_HOST' is not defined")
+	// }
 
+	dbName := os.Getenv("DB_NAME")
+	// if utils.GetStringAbsoluteLength(dbName) == 0 {
+	// 	return nil, errors.New("'DB_NAME' is not defined")
+	// }
+
+	dbUser := os.Getenv("DB_USERNAME")
+	// if utils.GetStringAbsoluteLength(dbUser) == 0 {
+	// 	return nil, errors.New("'DB_USERNAME' is not defined")
+	// }
+
+	dbPass := os.Getenv("DB_PASSWORD")
+	// if utils.GetStringAbsoluteLength(dbPass) == 0 {
+	// 	return nil, errors.New("'DB_PASSWORD' is not defined")
+	// }
+
+	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		fmt.Println("💥 Wasn't able to parse provided port for db, defaulting to 5432!")
 		dbPort = 5432
@@ -42,6 +49,11 @@ func CreatePostgresConnection() (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// _, err = pool.Query(context.Background(), "SELECT 1 + 1;")
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	fmt.Println("🛅 Connected to Postgres...")
 
