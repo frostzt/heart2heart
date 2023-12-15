@@ -1,8 +1,7 @@
-
 #!/bin/bash
 
 # Create a new Minikube Cluster
-minikube start --kubernetes-version=v1.28 --cpus=6 --memory=12000 --disk-size=50g
+minikube start --kubernetes-version=v1.28 --cpus=6 --memory=10000 --disk-size=50g
 killall kubectl
 
 # Enable Ingress Addon
@@ -27,3 +26,4 @@ helm repo update
 
 echo
 echo "Local K8s cluster up and running..."
+

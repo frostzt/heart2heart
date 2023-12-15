@@ -5,6 +5,11 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
+	// Misc routes
+	misc := v1.Group("/misc")
+
+	misc.GET("/healthcheck", h.Healthcheck)
+
 	// Users specific routes
 	users := v1.Group("/users")
 
