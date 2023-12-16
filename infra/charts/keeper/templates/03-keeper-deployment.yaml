@@ -10,8 +10,14 @@ spec:
     app: {{ .Values.application.meta.appName }}
   ports:
     - protocol: TCP
-      port: 80
+      name: 'rest-api-port'
+      port: {{ .Values.application.containerPort }}
       targetPort: {{ .Values.application.containerPort }}
+
+    - protocol: TCP
+      name: 'grpc-port'
+      port: {{ .Values.application.grpcPort }}
+      targetPort: {{ .Values.application.grpcPort }}
   type: ClusterIP
 ---
 # Deployment for Keeper Service

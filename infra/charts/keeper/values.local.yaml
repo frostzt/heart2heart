@@ -2,6 +2,7 @@
 application:
   containerName: 'keeper-svc'
   containerPort: 1323
+  grpcPort: 50051
   env: 'development'
 
   # Application Metadata

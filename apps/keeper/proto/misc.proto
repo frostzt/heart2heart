@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package keeper_api;
+option go_package = "/proto";
+
+service KeeperAPIService {
+  rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool status = 1;
+  string message = 2;
+}
