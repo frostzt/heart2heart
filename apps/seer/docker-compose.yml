@@ -1,0 +1,17 @@
+version: '2'
+services:
+  seer-postgres:
+    container_name: seer_database
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - seer-postgres-volume:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  seer-postgres-volume: {}

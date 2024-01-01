@@ -7,7 +7,6 @@ docker_build(
   'keeper-service:local',
   dockerfile='./apps/keeper/Dockerfile.local',
   context='.',
-  ignore=['./apps/bigboss/*', './apps/hippo/*', './apps/seer/*', './apps/summer/*', './apps/summer-e2e/*'],
   live_update=[sync('.', '/apps/keeper')]
 )
 
